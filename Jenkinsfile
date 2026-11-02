@@ -37,8 +37,8 @@ pipeline {
         stage('Push Docker Image') {
     steps {
         sh '''
-            docker tag fastapi-devops:$IMAGE_TAG localhost:5001/fastapi-devops:$IMAGE_TAG
-            docker push localhost:5001/fastapi-devops:$IMAGE_TAG
+            docker tag fastapi-devops:$IMAGE_TAG local-registry:5000/fastapi-devops:$IMAGE_TAG
+            docker push local-registry:5000/fastapi-devops:$IMAGE_TAG
         '''
     }
 }
