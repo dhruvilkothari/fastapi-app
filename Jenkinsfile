@@ -42,6 +42,42 @@ pipeline {
         '''
     }
 }
+stage('Update GitOps Repository') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'github-fastapi-infra',
+            usernameVariable: 'GIT_USER',
+            passwordVariable: 'GIT_TOKEN'
+        )]) {
+            sh '''
+                set -eu
+                set +x
+
+                rm -rf fastapi-infra
+                git clone https://github.com/dhruvilkothari/fastapi-infra.git fastapi-infra
+                cd fastapi-infra
+
+                git config user.name "Jenkins CI"
+                git config user.email "jenkins@localhost"
+
+                sed -i -E "s/^(  tag:).*/\\1 \\"$IMAGE_TAG\\"/" charts/fastapi/values.yaml
+
+                git add charts/fastapi/values.yaml
+
+                if git diff --cached --quiet; then
+                    echo "Image tag already up to date"
+                    exit 0
+                fi
+
+                git commit -m "Deploy FastAPI image $IMAGE_TAG"
+
+                git -c credential.helper= \
+                    -c core.askPass=/bin/false \
+                    push https://github.com/dhruvilkothari/fastapi-infra.git HEAD:master
+            '''
+        }
+    }
+}
 
         stage('Verify Docker Image') {
             steps {
