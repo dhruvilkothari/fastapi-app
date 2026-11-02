@@ -34,6 +34,14 @@ pipeline {
                 }
             }
         }
+        stage('Push Docker Image') {
+    steps {
+        sh '''
+            docker tag fastapi-devops:$IMAGE_TAG localhost:5001/fastapi-devops:$IMAGE_TAG
+            docker push localhost:5001/fastapi-devops:$IMAGE_TAG
+        '''
+    }
+}
 
         stage('Verify Docker Image') {
             steps {
