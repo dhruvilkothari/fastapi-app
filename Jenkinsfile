@@ -71,9 +71,10 @@ stage('Update GitOps Repository') {
 
                 git commit -m "Deploy FastAPI image $IMAGE_TAG"
 
-                git -c credential.helper= \
-                    -c core.askPass=/bin/false \
-                    push https://github.com/dhruvilkothari/fastapi-infra.git HEAD:master
+                
+git -c credential.helper='!f() { echo "username=$GIT_USER"; echo "password=$GIT_TOKEN"; }; f' \
+    push https://github.com/dhruvilkothari/fastapi-infra.git HEAD:master
+
             '''
         }
     }
