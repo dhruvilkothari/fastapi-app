@@ -1,9 +1,14 @@
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 import os
+
 app = FastAPI(
     title="Devops Entry Project",
     version="1.0.0"
 )
+
+# Enable Prometheus metrics
+Instrumentator().instrument(app).expose(app)
 
 @app.get("/")
 def home():
